@@ -6,6 +6,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Membership ;
+use App\Models\Colocation;
+use App\Models\Expense;
+use App\Models\Settlement;
 
 class User extends Authenticatable
 {
@@ -18,9 +22,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+         'name',
         'email',
         'password',
+        'reputation',
+        'is_banned',
+        'role'
     ];
 
     /**
@@ -45,5 +52,30 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+   
+
+    public function colocations()
+    {
+        return $this->belongsToMany(Colocation::class, 'memberships')
+            ->withPivot('role', 'joined_at')
+            ->withTimestamps();
+    }
+
+    public function expensesPaid()
+    {
+        return $this->hasMany(Expense::class, 'payer_id');
+    }
+
+    public function setCreditor()
+    {
+        return $this->hasMany(Settlement::class, 'creditor_id');
+    }
+
+    public function setDebtor()
+    {
+        return $this->hasMany(Settlement::class, 'debtor_id');
+    }
 }
+
 
