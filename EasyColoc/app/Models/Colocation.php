@@ -13,12 +13,24 @@ class Colocation extends Model
         'status'
     ];
 
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'memberships')
-            ->withPivot('role', 'joined_at')
-            ->withTimestamps();
-    }
+   public function users()
+{
+    return $this->belongsToMany(
+        User::class,
+        'memberships',
+        'colocation_id', 
+        'user_id'
+    )->withPivot('role', 'joined_at')
+     ->withTimestamps();
+}
+
+
+
+
+
+
+
+
 
     public function expenses()
     {
