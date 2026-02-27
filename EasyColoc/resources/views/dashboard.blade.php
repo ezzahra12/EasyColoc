@@ -76,12 +76,12 @@
             <main class="flex flex-1 justify-center py-8 md:py-12">
                 <div class="layout-content-container flex flex-col max-w-[1100px] flex-1 px-4 md:px-10">
                     <div class="flex flex-col gap-2 mb-10">
-                        <h1
-                            class="text-slate-900 dark:text-slate-100 text-3xl md:text-4xl font-black leading-tight tracking-tight">
-                            Welcome back, Alex!</h1>
-                        <p class="text-slate-500 dark:text-slate-400 text-lg font-normal">You are part of 3 active
-                            colocations.</p>
-                    </div>
+                       <h1 class="text-slate-900 dark:text-slate-100 text-3xl md:text-4xl font-black leading-tight tracking-tight">
+    Welcome back, {{ auth()->user()->name }}!
+</h1>
+<p class="text-slate-500 dark:text-slate-400 text-lg font-normal">
+    You are part of {{ $allColocs->count() ?? 0 }} active colocations.
+</p>
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold tracking-tight">Your Colocations
                         </h2>
@@ -148,7 +148,7 @@
 
                 </div>
                 <a class="flex items-center gap-1 text-primary text-sm font-bold group-hover:translate-x-1 transition-transform"
-                   {{-- href="{{ route('colocations.show', $coloc->id) }}"> --}}
+                   href="{{ route('colocations.show', $coloc) }}"
                    >
                     View Dashboard
                     <span class="material-symbols-outlined text-sm">arrow_forward</span>
