@@ -11,8 +11,8 @@ class DashboardController extends Controller
         $allColocs = auth()->user()->colocations;
 
         $expenses = $colocation->expenses()->with('payer')->latest()->take(5)->get();
-
-        return view('colDashboard', compact('colocation', 'allColocs', 'expenses'));
+        $categories = $colocation->categories;
+        return view('colDashboard', compact('colocation', 'allColocs', 'expenses','categories'));
     }
 }
 

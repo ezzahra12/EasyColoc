@@ -46,6 +46,63 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+    @if(auth()->user()->role === 'admin')
+
+<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 mb-10 shadow-sm">
+
+    <h2 class="text-xl font-bold mb-6">User Management</h2>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b">
+                    <th class="py-3">Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(\App\Models\User::all() as $user)
+                <tr class="border-b hover:bg-slate-50 dark:hover:bg-slate-800">
+                    <td class="py-3">{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                    <td>{{ $user->role }}</td>
+                   <td>
+    @if($user->is_banned)
+        <span class="text-red-500 font-bold mr-3">Banned</span>
+
+        <form action="{{ route('admin.users.unban', $user) }}" method="POST" class="inline">
+            @csrf
+            <button
+                type="submit"
+                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg text-sm transition">
+                Unban
+            </button>
+        </form>
+
+    @else
+        <span class="text-green-500 font-bold mr-3">Active</span>
+
+        <form action="{{ route('admin.users.ban', $user) }}" method="POST" class="inline">
+            @csrf
+            <button
+                type="submit"
+                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm transition">
+                Ban
+            </button>
+        </form>
+    @endif
+</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+@endif
     <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
         <div class="layout-container flex h-full grow flex-col">
             <header
@@ -62,9 +119,14 @@
                         <a class="text-primary text-sm font-bold transition-colors border-b-2 border-primary pb-1"
                             href="#">My Colocs</a>
                         <a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                            href="{route::}">Profile</a>
-                        <a class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors"
-                            href="#">Logout</a>
+                            href="{{route("profile.edit")}}">Profile</a>
+                        <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit"
+        class="text-slate-700 dark:text-slate-300 text-sm font-medium hover:text-primary transition-colors">
+        Logout
+    </button>
+</form>
                     </nav>
                     <button
                         class="flex min-w-[40px] md:min-w-[140px] cursor-pointer items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal transition-all hover:shadow-lg hover:shadow-primary/20">
@@ -87,17 +149,32 @@
                         </h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <button onclick="document.getElementById('newColocModal').classList.remove('hidden')"
-                            class="group flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-8 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer min-h-[220px]">
-                            <div
-                                class="size-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
-                                <span class="material-symbols-outlined text-3xl">add</span>
-                            </div>
-                            <div class="text-center">
-                                <h3 class="text-slate-900 dark:text-slate-100 font-bold">Create New</h3>
-                                <p class="text-slate-500 text-sm">Add a new shared space</p>
-                            </div>
-                        </button>
+                      @if(!$hasActiveColocation)
+    <button onclick="document.getElementById('newColocModal').classList.remove('hidden')"
+        class="group flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-8 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer min-h-[220px]">
+        <div
+            class="size-14 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
+            <span class="material-symbols-outlined text-3xl">add</span>
+        </div>
+        <div class="text-center">
+            <h3 class="text-slate-900 dark:text-slate-100 font-bold">Create New</h3>
+            <p class="text-slate-500 text-sm">Add a new shared space</p>
+        </div>
+    </button>
+@else
+    <button disabled
+        title="You already have an active colocation"
+        class="group flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-gray-400 dark:border-gray-600 p-8 cursor-not-allowed min-h-[220px] bg-gray-100 dark:bg-gray-800 text-slate-400">
+        <div
+            class="size-14 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400 transition-all">
+            <span class="material-symbols-outlined text-3xl">add</span>
+        </div>
+        <div class="text-center">
+            <h3 class="font-bold">Create New</h3>
+            <p class="text-sm">Add a new shared space</p>
+        </div>
+    </button>
+@endif
                         <div id="newColocModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
     <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl w-full max-w-md">
         <h3 class="text-lg font-bold mb-4">Create New Colocation</h3>
