@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-use Illuminate\Database\Eloquent\Factories\HasFactory; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Colocation extends Model
@@ -14,19 +14,22 @@ class Colocation extends Model
     ];
 
 
-  public function members()
-    {
-        return $this->belongsToMany(User::class)
-                    ->withPivot('role', 'joined_at')
-                    ->withTimestamps();
-    }
+ public function members()
+{
+    return $this->belongsToMany(User::class, 'memberships')
+                ->withPivot('role', 'joined_at')
+                ->withTimestamps();
+}
 public function users()
 {
     return $this->belongsToMany(User::class, 'memberships')
                 ->withPivot('role', 'joined_at')
                 ->withTimestamps();
 }
-
+public function categories()
+{
+    return $this->hasMany(Category::class);
+}
 
 
 

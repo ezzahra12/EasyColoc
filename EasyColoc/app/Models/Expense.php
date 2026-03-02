@@ -3,7 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use APP\Models\User;
 class Expense extends Model
 {
     use HasFactory;
@@ -30,4 +30,13 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class, 'payer_id');
     }
+
+      public function users()
+    {
+        return $this->belongsToMany(User::class, 'settlements')
+                    ->withPivot('amount', 'is_paid')
+                    ->withTimestamps();
+    }
+
+
 }

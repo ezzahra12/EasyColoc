@@ -1,11 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\ColocationController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UserController;
+use Laravel\Fortify\Http\Controllers\AuthenticatedSessionController;
 
 Route::view('/', 'welcome');
 
@@ -20,10 +24,14 @@ Route::view('profile', 'profile')
 require __DIR__.'/auth.php';
 
 
+Route::post('/colocations/{colocation}/leave', [\App\Http\Controllers\ColocationController::class, 'leave'])
+    ->middleware('auth')
+    ->name('colocations.leave');
 
-// Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-//     ->name('logout');
-
+Route::post('/logout', function() {
+    Auth::logout();
+    return redirect('/login');
+})->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     // Page profil
@@ -59,3 +67,44 @@ Route::get('/dashboard/{colocation}', [DashboardController::class, 'show'])
 
 
  Route::get('/colocations/{colocation}', [DashboardController::class, 'show'])->name('colocations.show');
+
+ Route::post('/colocations/{colocation}/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
+Route::get('/colocations/{colocation}/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+
+// // Invitations
+//     Route::post('/invitations/send', [\App\Http\Controllers\InvitationController::class, 'store'])
+//         ->name('invitations.send');
+    Route::get('/invitations/choose/{token}', [\App\Http\Controllers\InvitationController::class, 'choose'])
+        ->name('invitations.choose');
+    Route::get('/invitations/accept/{token}', [\App\Http\Controllers\InvitationController::class, 'accept'])
+        ->name('invitations.accept');
+    Route::get('/invitations/refuse/{token}', [\App\Http\Controllers\InvitationController::class, 'refuse'])
+        ->name('invitations.refuse');
+
+        use Illuminate\Support\Facades\Mail;
+
+// Route::get('/test-mail', function () {
+//     Mail::raw('EasyColoc test email 🚀', function ($message) {
+//         $message->to('test@example.com')
+//                 ->subject('Test Email');
+//     });
+
+//     return 'Email sent!';
+// });
+
+use App\Http\Controllers\InvitationController;
+
+Route::post('/colocation/{colocation}/invite', [InvitationController::class, 'send'])->name('invitations.send');
+Route::get('/invitations/respond/{token}/{action}',
+    [InvitationController::class, 'respond'])
+    ->name('invitations.respond');
+
+Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+
+Route::post('/admin/users/{user}/ban', [UserController::class, 'ban'])
+    ->middleware(['auth'])
+    ->name('admin.users.ban');
+
+Route::post('/admin/users/{user}/unban', [UserController::class, 'unban'])
+    ->middleware(['auth'])
+    ->name('admin.users.unban');

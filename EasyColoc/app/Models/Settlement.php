@@ -14,7 +14,7 @@ class Settlement extends Model
         'is_paid'
     ];
 
-    public function creditor()
+      public function creditor()
     {
         return $this->belongsTo(User::class, 'creditor_id');
     }
@@ -22,6 +22,11 @@ class Settlement extends Model
     public function debtor()
     {
         return $this->belongsTo(User::class, 'debtor_id');
+    }
+
+    public function expense()
+    {
+        return $this->belongsTo(Expense::class);
     }
 
     public function colocation()
