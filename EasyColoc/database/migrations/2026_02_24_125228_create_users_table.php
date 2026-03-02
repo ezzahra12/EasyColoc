@@ -18,7 +18,7 @@ return new class extends Migration
     $table->string('password');
     $table->integer('reputation')->default(0);
     $table->boolean('is_banned')->default(false);
-    $table->enum('role', ['Member','Owner','Admin'])->default('Member');
+    $table->enum('role', ['admin','user'])->default('user');
     $table->timestamps();
 });
 }

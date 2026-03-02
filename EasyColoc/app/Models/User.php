@@ -27,7 +27,7 @@ class User extends Authenticatable
         'password',
         'reputation',
         'is_banned',
-        'role'
+        'role',
     ];
 
     /**
@@ -53,7 +53,7 @@ class User extends Authenticatable
         ];
     }
 
-   
+
 
     public function colocations()
     {
@@ -62,11 +62,34 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function memberColocations(){
+        return $this->colocations()->wherePivot('role','member');
+    }
+     public function ownerColocations(){
+        return $this->colocations()->wherePivot('role','owner');
+    }
+public function debts()
+    {
+        return $this->hasMany(Settlement::class, 'debtor_id');
+    }
+   public function credits()
+    {
+        return $this->hasMany(Settlement::class, 'creditor_id');
+    }
     public function expensesPaid()
     {
         return $this->hasMany(Expense::class, 'payer_id');
     }
+       public function balance($colocation)
+    {
+        $paid = $this->expensesPaid()
+                     ->where('colocation_id', $colocation->id)
+                     ->sum('amount');
 
+        $owed = $this->debts($colocation)->sum('amount');
+
+        return $paid - $owed;
+    }
     public function setCreditor()
     {
         return $this->hasMany(Settlement::class, 'creditor_id');
